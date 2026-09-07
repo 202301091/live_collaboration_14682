@@ -10,13 +10,6 @@ export const fallback = {
   activities: [],
 };
 
-const INITIAL_OBJECTS = {
-  'hero-card-1': { objectId: 'hero-card-1', x: 12, y: 35, rotation: 0, updatedBy: 'System' },
-  'hero-card-2': { objectId: 'hero-card-2', x: 88, y: 25, rotation: -5, updatedBy: 'System' },
-  'hero-card-3': { objectId: 'hero-card-3', x: 75, y: 70, rotation: 8, updatedBy: 'System' },
-  'hero-badge-1': { objectId: 'hero-badge-1', x: 25, y: 75, rotation: 12, updatedBy: 'System' },
-};
-
 const adjectives = ['Quantum', 'Hyper', 'Neo', 'Pixel', 'Vector', 'Optic', 'Cosmic', 'Neural', 'Cyber', 'Sonic', 'Aether', 'Astral'];
 const nouns = ['Architect', 'Designer', 'Coder', 'Cursor', 'Navigator', 'Explorer', 'Spark', 'Builder', 'Maker', 'Warp', 'Node', 'Pulse'];
 const colors = [

@@ -4,6 +4,7 @@ const JWT_SECRET = process.env.JWT_SECRET || 'serin-super-secret-key';
 export function generateToken(userPayload) {
   return jwt.sign(userPayload, JWT_SECRET, { expiresIn: '7d' });
 }
+
 // REST middleware to verify token
 export function authMiddleware(req, res, next) {
   const authHeader = req.headers['authorization'];

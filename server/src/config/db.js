@@ -11,11 +11,11 @@ export async function connectDB() {
       serverSelectionTimeoutMS: 5000,
     });
     isConnected = true;
-    console.log('✅ Connected to MongoDB successfully.');
+    console.log('Connected to MongoDB successfully.');
     return true;
   } catch (err) {
-    console.warn(`❌ MongoDB connection failed: ${err.message}`);
-    console.warn('⚠️ Server will operate using dynamic local fallback state, but some persistences might be memory-only.');
+    console.warn(`MongoDB connection failed: ${err.message}`);
+    console.warn('Server will operate using dynamic local fallback state, but some persistences might be memory-only.');
     isConnected = false;
     return false;
   }
