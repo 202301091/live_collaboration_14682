@@ -7,8 +7,8 @@ export function Footer() {
         {/* Branding */}
         <div className="flex flex-col items-center md:items-start text-center md:text-left gap-1">
           <div className="flex items-center gap-2">
-            <span className="font-extrabold text-sm text-gray-300 tracking-tight">Serin AI</span>
-            <span className="text-[10px] text-gray-600 font-medium">© 2026 Serin. All rights reserved.</span>
+            <span className="font-extrabold text-sm text-gray-300 tracking-tight">LiveSpace AI</span>
+            <span className="text-[10px] text-gray-600 font-medium">© 2026 LiveSpace. All rights reserved.</span>
           </div>
           <p className="text-[10px] text-gray-600 max-w-xs mt-1">
             Fictional collaborative platform demonstrating advanced full-stack and WebSocket real-time system architectures.
@@ -22,7 +22,7 @@ export function Footer() {
           <span className="text-gray-800">|</span>
           <a href="#" className="hover:text-white transition-colors">API Docs</a>
           <span className="text-gray-800">|</span>
-          <a href="mailto:support@serin-workspace.ai" className="hover:text-white transition-colors">Contact Support</a>
+          <a href="mailto:support@LiveSpace-workspace.ai" className="hover:text-white transition-colors">Contact Support</a>
         </div>
       </div>
     </footer>

@@ -26,7 +26,7 @@ function InnerPage() {
   };
   React.useEffect(() => {
     const handleLocalMouse = (e) => {
-      const socketContext = window.serin_socket_dispatchers;
+      const socketContext = window.LiveSpace_socket_dispatchers;
       if (socketContext) {
         socketContext.sendCursorMove(e.detail);
       }
@@ -110,7 +110,7 @@ function SocketConsumerWrapper({ children }) {
   
   React.useEffect(() => {
     if (socketContext) {
-      window.serin_socket_dispatchers = socketContext;
+      window.LiveSpace_socket_dispatchers = socketContext;
     }
   }, [socketContext]);
   return <>{children}</>;

@@ -41,7 +41,7 @@ export default function socketHandler(io) {
 
     let joinActivity;
     try {
-      const logText = `joined the Serin real-time session`;
+      const logText = `joined the LiveSpace real-time session`;
       if (getIsConnected()) {
         joinActivity = await Activity.create({
           type: 'join',
@@ -259,7 +259,7 @@ export default function socketHandler(io) {
       }
       socket.broadcast.emit('user:left', socket.id);
       try {
-        const leaveText = `left the Serin session`;
+        const leaveText = `left the LiveSpace session`;
         let leaveAct;
         if (getIsConnected()) {
           leaveAct = await Activity.create({

@@ -7,19 +7,17 @@ const outfit = Outfit({
   variable: "--font-outfit",
 });
 export const metadata = {
-  title: "Serin | Collaborative Real-Time Workspace",
-  description: "Experience Serin - a fictional, high-end collaborative workspace. Design together, chat in real-time, draw synchronously, and vote on features with users worldwide.",
+  title: "LiveSpace | Collaborative Real-Time Workspace",
+  description: "Experience LiveSpace - a fictional, high-end collaborative workspace. Design together, chat in real-time, draw synchronously, and vote on features with users worldwide.",
   openGraph: {
-    title: "Serin | Collaborative Real-Time Workspace",
-    description: "Experience Serin - a fictional, high-end collaborative workspace. Design together, chat in real-time, draw synchronously, and vote on features with users worldwide.",
-    url: "https://serin-ai.com",
-    siteName: "Serin AI",
+    title: "LiveSpace | Collaborative Real-Time Workspace",
+    description: "Experience LiveSpace - a fictional, high-end collaborative workspace. Design together, chat in real-time, draw synchronously, and vote on features with users worldwide.",
     images: [
       {
         url: "/og-image.png",
         width: 1200,
         height: 630,
-        alt: "Serin Collaborative AI Platform",
+        alt: "LiveSpace Collaborative AI Platform",
       },
     ],
     locale: "en_US",
@@ -27,8 +25,8 @@ export const metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Serin | Collaborative Real-Time Workspace",
-    description: "Experience Serin - a fictional, high-end collaborative workspace.",
+    title: "LiveSpace | Collaborative Real-Time Workspace",
+    description: "Experience LiveSpace - a fictional, high-end collaborative workspace.",
   }
 };
 export default function RootLayout({ children }) {

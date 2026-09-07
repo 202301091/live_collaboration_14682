@@ -38,11 +38,11 @@ export const SocketProvider = ({ children }) => {
     let activeSocket = null;
     const initConnection = async () => {
       try {
-        let token = localStorage.getItem('serin_guest_token');
+        let token = localStorage.getItem('LiveSpace_guest_token');
         let localUser = null;
-        if (localStorage.getItem('serin_guest_user')) {
+        if (localStorage.getItem('LiveSpace_guest_user')) {
           try {
-            localUser = JSON.parse(localStorage.getItem('serin_guest_user'));
+            localUser = JSON.parse(localStorage.getItem('LiveSpace_guest_user'));
           } catch (_) {}
         }
 
@@ -50,8 +50,8 @@ export const SocketProvider = ({ children }) => {
           const res = await axios.post(`${SERVER_URL}/api/auth/guest`);
           token = res.data.token;
           localUser = res.data.user;
-          localStorage.setItem('serin_guest_token', token);
-          localStorage.setItem('serin_guest_user', JSON.stringify(localUser));
+          localStorage.setItem('LiveSpace_guest_token', token);
+          localStorage.setItem('LiveSpace_guest_user', JSON.stringify(localUser));
         }
         setMe(localUser);
 
@@ -77,7 +77,7 @@ export const SocketProvider = ({ children }) => {
         socket.on('connect', () => {
           setConnected(true);
           setAuthError(null);
-          toast.success('Connected to Serin Live Engine', {
+          toast.success('Connected to LiveSpace Live Engine', {
             style: { background: '#1e293b', color: '#fff', border: '1px solid rgba(255,255,255,0.1)' }
           });
         });
@@ -87,8 +87,8 @@ export const SocketProvider = ({ children }) => {
           if (err.message.includes('Authentication error')) {
             setAuthError(err.message);
             // Clear credentials to re-register guest on next try
-            localStorage.removeItem('serin_guest_token');
-            localStorage.removeItem('serin_guest_user');
+            localStorage.removeItem('LiveSpace_guest_token');
+            localStorage.removeItem('LiveSpace_guest_user');
           }
         });
         socket.on('disconnect', () => {

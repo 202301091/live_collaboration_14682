@@ -13,7 +13,7 @@ export function Navbar() {
       <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
         
         <div className="flex items-center gap-2">
-          <span className="text-xl font-black tracking-tight text-white">Serin</span>
+          <span className="text-xl font-black tracking-tight text-white">LiveSpace</span>
           <span className="px-1.5 py-0.5 rounded bg-violet-600/20 text-violet-400 border border-violet-500/30 text-[9px] font-bold uppercase tracking-wider">
             Workspace
           </span>

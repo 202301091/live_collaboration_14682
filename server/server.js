@@ -24,7 +24,7 @@ io.use(socketAuthMiddleware);
 socketHandler(io);
 // Connect to Database and start listening
 async function startServer() {
-  console.log('Initializing Serin collaborative server...');
+  console.log('Initializing LiveSpace collaborative server...');
   await connectDB();
   
   server.listen(PORT, () => {
@@ -33,6 +33,6 @@ async function startServer() {
   });
 }
 startServer().catch((err) => {
-  console.error('Failed to start the Serin server:', err);
+  console.error('Failed to start the LiveSpace server:', err);
   process.exit(1);
 });

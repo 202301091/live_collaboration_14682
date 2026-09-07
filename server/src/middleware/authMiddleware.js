@@ -1,5 +1,5 @@
 import jwt from 'jsonwebtoken';
-const JWT_SECRET = process.env.JWT_SECRET || 'serin-super-secret-key';
+const JWT_SECRET = process.env.JWT_SECRET || 'LiveSpace-super-secret-key';
 // Generate token for a guest user
 export function generateToken(userPayload) {
   return jwt.sign(userPayload, JWT_SECRET, { expiresIn: '7d' });
