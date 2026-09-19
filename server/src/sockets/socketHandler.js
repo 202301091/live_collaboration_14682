@@ -18,7 +18,7 @@ const globalVotes = {
 let canvasHistory = []; // Keeps drawing backlog for newly joined users
 export default function socketHandler(io) {
   io.on('connection', async (socket) => {
-
+   console.log(`[Worker PID ${process.pid}] Client connected: Socket ID = ${socket.id}`);
     const { id: userId, username, color } = socket.user;
     
     console.log(`Client connected: ${username} (Socket: ${socket.id})`);
