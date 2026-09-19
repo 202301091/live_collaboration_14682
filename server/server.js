@@ -1,4 +1,5 @@
 import 'dotenv/config';
+import cluster from 'node:cluster';
 import http from 'http';
 import { Server } from 'socket.io';
 import { createClient } from 'redis';
@@ -10,66 +11,86 @@ import { socketAuthMiddleware } from './src/middleware/authMiddleware.js';
 import socketHandler from './src/sockets/socketHandler.js';
 
 const PORT = process.env.PORT || 5000;
+const WORKERS = 2; // Spawns 2 isolated server processes
 
-// Track request port identity
-app.use((req, res, next) => {
-  res.setHeader('X-Served-By-Port', PORT);
-  console.log(`[REQ] ${req.method} ${req.url} -> Handled by instance on port ${PORT}`);
-  next();
-});
+if (cluster.isPrimary) {
+  console.log(`[Master PID ${process.pid}] Launching ${WORKERS} collaborative server instances...`);
 
-// Create HTTP server
-const server = http.createServer(app);
+  for (let i = 0; i < WORKERS; i++) {
+    cluster.fork();
+  }
 
-// Initialize Socket.IO with CORS settings
-const io = new Server(server, {
-  cors: {
-    origin: '*', // Allow all client connections
-    methods: ['GET', 'POST'],
-    credentials: true,
-  },
-  pingTimeout: 60000, // Handle client reconnects gracefully
-  pingInterval: 2500,
-});
+  // Auto-restart any worker if it crashes
+  cluster.on('exit', (worker) => {
+    console.warn(`[Worker PID ${worker.process.pid}] stopped unexpectedly. Restarting...`);
+    cluster.fork();
+  });
+} else {
+  // Worker process execution
+  const workerPid = process.pid;
 
-// Attach Authentication Middleware to Sockets
-io.use(socketAuthMiddleware);
+  // Track request worker identity in response headers
+  app.use((req, res, next) => {
+    res.setHeader('X-Served-By-Worker', workerPid);
+    res.setHeader('X-Served-By-Port', PORT);
+    console.log(`[REQ] ${req.method} ${req.url} -> Handled by Worker PID ${workerPid}`);
+    next();
+  });
 
-// Initialize Socket event handlers
-socketHandler(io);
+  const server = http.createServer(app);
 
-// Connect to Database, Redis, and start listening
-async function startServer() {
-  console.log(`[Port ${PORT}] Initializing LiveSpace collaborative server...`);
+  const io = new Server(server, {
+    cors: {
+      origin: '*', // Allow connections from your Vercel deployment
+      methods: ['GET', 'POST'],
+      credentials: true,
+    },
+    // Force direct WebSocket transport (avoids sticky session errors)
+    transports: ['websocket'],
+    pingTimeout: 60000,
+    pingInterval: 2500,
+  });
 
-  // 1. Database connection
-  await connectDB();
+  io.use(socketAuthMiddleware);
+  socketHandler(io);
 
-  // 2. Setup Redis Pub/Sub Clients for native Windows Redis (port 6379)
-  const redisUrl = process.env.REDIS_URL || 'redis://127.0.0.1:6379';
-  const pubClient = createClient({ 
-  url: redisUrl,
-  RESP: 2 
-});
-  const subClient = pubClient.duplicate();
+  async function startWorker() {
+    console.log(`[Worker PID ${workerPid}] Initializing database and Redis bus...`);
+    await connectDB();
 
-  pubClient.on('error', (err) => console.error(`[Port ${PORT}] [Redis Pub Error]`, err));
-  subClient.on('error', (err) => console.error(`[Port ${PORT}] [Redis Sub Error]`, err));
+    const redisUrl = process.env.REDIS_URL || 'redis://127.0.0.1:6379';
+    const isTls = redisUrl.startsWith('rediss://');
 
-  await Promise.all([pubClient.connect(), subClient.connect()]);
-  console.log(`[Port ${PORT}] Connected to Redis Pub/Sub successfully`);
+    const redisOptions = {
+      url: redisUrl,
+      RESP: 2, // Ensures compatibility with all Redis versions
+      socket: isTls
+        ? {
+            tls: true,
+            rejectUnauthorized: false,
+          }
+        : undefined,
+    };
 
-  // 3. Mount Redis Adapter to Socket.io
-  io.adapter(createAdapter(pubClient, subClient));
+    const pubClient = createClient(redisOptions);
+    const subClient = pubClient.duplicate();
 
-  // 4. Start HTTP & WebSocket Server
-  server.listen(PORT, () => {
-    console.log(`Server listening on port ${PORT}`);
-    console.log(`WebSocket server mapped & listening`);
+    pubClient.on('error', (err) => console.error(`[Worker ${workerPid}] [Redis Pub Error]`, err));
+    subClient.on('error', (err) => console.error(`[Worker ${workerPid}] [Redis Sub Error]`, err));
+
+    await Promise.all([pubClient.connect(), subClient.connect()]);
+    console.log(`[Worker PID ${workerPid}] Connected to Redis Pub/Sub successfully`);
+
+    // Bridge Socket.IO across all worker processes using Redis
+    io.adapter(createAdapter(pubClient, subClient));
+
+    server.listen(PORT, () => {
+      console.log(`[Worker PID ${workerPid}] LiveSpace server listening on port ${PORT}`);
+    });
+  }
+
+  startWorker().catch((err) => {
+    console.error(`[Worker PID ${workerPid}] Startup failure:`, err);
+    process.exit(1);
   });
 }
-
-startServer().catch((err) => {
-  console.error(`[Port ${PORT}] Failed to start the LiveSpace server:`, err);
-  process.exit(1);
-});
