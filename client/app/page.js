@@ -14,26 +14,27 @@ import CursorOverlay from '../components/realtime/CursorOverlay.js';
 import HeatmapOverlay from '../components/realtime/HeatmapOverlay.js';
 import Footer from '../components/shared/Footer.js';
 import ChatWidget from '../components/chat/ChatWidget.js';
+import { useThrottle } from '../hooks/useThrottle';
 
 function InnerPage() {
   const theme = useStore((state) => state.theme);
   const cursors = useStore((state) => state.cursors);
   const { sendCursorMove } = useStore();
+  
+  const throttledSendCursorMove = useThrottle((position) => {
+    const socketContext = window.LiveSpace_socket_dispatchers;
+
+    if (socketContext) {
+      socketContext.sendCursorMove(position);
+    }
+  }, 500);
+
   const handleMouseMove = (e) => {
-    window.dispatchEvent(new CustomEvent('local:mousemove', {
-      detail: { x: e.clientX, y: e.clientY }
-    }));
-  };
-  React.useEffect(() => {
-    const handleLocalMouse = (e) => {
-      const socketContext = window.LiveSpace_socket_dispatchers;
-      if (socketContext) {
-        socketContext.sendCursorMove(e.detail);
-      }
-    };
-    window.addEventListener('local:mousemove', handleLocalMouse);
-    return () => window.removeEventListener('local:mousemove', handleLocalMouse);
-  }, []);
+    throttledSendCursorMove({
+      x: e.clientX,
+      y: e.clientY
+    });
+  };  
   
   const getThemeClass = () => {
     switch (theme) {
